@@ -1,15 +1,38 @@
 import React, { useState } from 'react';
 import StudentForm from './StudentForm';
 import jsonData from './data.json';
-import './StudentForm.css'
 
 function TableData() {
 const [employeeData, setemployeeData] = useState(jsonData);
-const [SelectedData, setSelectedData] = useState(false);
+const [isUpdate,setIsUpdate] = useState(false)
+const [info,setInfo] =useState({})
+
+function editComponent(info){
+	console.log("Edit Component Clicked")
+	setIsUpdate(true)
+	console.log(info)
+	setInfo(info)
+}
+
+function deleteComponent(info){
+	console.log("inside delete component")
+	let empData=employeeData;
+	console.log(empData,info)
+	let data=[]
+	for(let i=0;i<empData.length;i++){
+		console.log(empData[i].id,info.id)
+		if(empData[i].id!=info.id){
+			data.push(empData[i])
+		}
+	}
+	setemployeeData(data)
+
+}
 
 const tableRows = employeeData.map((info) => {
 	return (
-	<tr id='tbox'>
+		
+	<tr>
 		<td>{info.id}</td>
 		<td>{info.Name}</td>
 		<td>{info.EmailId}</td>
@@ -19,36 +42,45 @@ const tableRows = employeeData.map((info) => {
 		<td>{info.State}</td>
 		<td>{info.Country}</td>
 		<td>{info.Postalcode}</td>
-	<td><button onClick={() =>setSelectedData(info)}>Edit</button></td>
-	<td><button onClick={() =>setSelectedData(info)}>Delete</button></td>
-	
+		<button onClick={()=>{
+			editComponent(info)
+		}} >edit</button>
+		<button onClick={()=>{
+			deleteComponent(info)
+		}}>delete</button>
 	</tr>
+	
 	);
 });
 
-const addRows = (data,method) => {
-	if(method ==='Add'){
-	const totalemployees = employeeData.length;
-	data.id = totalemployees + 1;
-	const updatedemployeeData = [...employeeData,data];
-	updatedemployeeData.push(data);
-	setemployeeData(updatedemployeeData);
+const addRows = (data) => {
+	console.log("inside addrows",data)
+	console.log(employeeData)
+	if(data.id){
+		console.log("inside update logic method")
+		let data1=[...employeeData]
+		for(let i=0;i<data1.length;i++){
+			if(data1[i].id===data.id){
+				data1[i]=data;
+			}
+		}
+		console.log("Data 1 ",data1)
+		setemployeeData(data1)
+		setIsUpdate(false)
 	}
-	else {
-		const totalemployees = employeeData.length;
+	else{
+	const totalemployees = employeeData.length;
 	data.id = totalemployees + 1;
 	const updatedemployeeData = [...employeeData];
 	updatedemployeeData.push(data);
 	setemployeeData(updatedemployeeData);
-	
 	}
-
 };
 
 return (
 	<div>
 	<table class="table table-striped">
-		<thead id='tbox'>
+		<thead>
 		<tr>
 			<th>Sr.NO</th>
 			<th>Name</th>
@@ -59,12 +91,12 @@ return (
 			<th>State</th>
 			<th>Country</th>
 			<th>Postalcode</th>
+			<th>Action</th>
 		</tr>
 		</thead>
 		<tbody>{tableRows}</tbody>
 	</table>
-	<StudentForm func={addRows} />
-
+	<StudentForm func={addRows} isUpdate={isUpdate} info={info}/>
 	</div>
 );
 }

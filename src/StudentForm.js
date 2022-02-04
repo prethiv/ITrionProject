@@ -1,19 +1,121 @@
-import React, { useState } from 'react';
+import { getDefaultNormalizer } from '@testing-library/react';
+import React, { useState,useEffect } from 'react';
 import './StudentForm.css'
 
+
+function isvalidname(name){
+	let n=name.length;
+	let nums=['0','1','2','3','4','5','6','7','8','9']
+	for(let i=0;i<n;i++){
+		let t=name[i];
+		if(nums.includes(t)){
+			return false;
+		}
+	}
+	return true;
+}
+
+function isemailValid(email){
+	let number_of_times_at=0;
+	// let dot_count=0;
+	let startposition=email[0];
+	let nums=['0','1','2','3','4','5','6','7','8','9']
+	if(startposition==='@'||nums.includes(startposition)){
+		return false;
+	}
+	else{
+		for(let i=0;i<email.length;i++){
+			let g=email[i];
+			if(g==='@'){
+				number_of_times_at++;
+			}
+			// if(g==='.'){
+			// 	dot_count++;
+			// }
+		}
+		if(number_of_times_at>1||number_of_times_at<1){
+			return false;
+		}
+
+	}
+	return true;
+}
+
+
+function isPhoneNumberVallid(phone){
+	let phone_digs=['0','1','2','3','4','5','6','7','8','9','+'];
+	console.log("phone",phone)
+	for(let i=0;i<phone.length;i++){
+		let t=phone[i];
+		if(phone_digs.includes(t)){
+			continue;
+		}
+		else{
+			return false;
+		}
+	}
+	return true;
+
+}
+
 function StudentForm(props) {
-	const [Name, setName] = useState(props.SelectedData?.Name||"");
-	const [EmailId, setEmailId] = useState('');
+	console.log("inside student form",props)
+	const [id,setId] =useState(props.info.id);
+	React.useEffect(() => {
+		setId(props.info.id);
+	},[ props.info.id])
+	const [Name, setName] = useState(props.info.Name);
+	React.useEffect(() => {
+		setName(props.info.Name);
+	},[ props.info.Name])
+  
+	const [isnameValid,setIsNameValid] = useState(true);
+	const [EmailId, setEmailId] = useState(props.info.EmailId);
+
+
+	React.useEffect(()=>{
+		setEmailId(props.info.EmailId)
+	},[props.info.EmailId])
+
+	const [isEmailValid,setIsEMailValid] = useState(true);
 	const [Phone, setPhone] = useState('');
+
+	React.useEffect(()=>{
+		setPhone(props.info.Phone)
+	},[props.info.Phone])
+
+	const [isPhoneValid,setIsPhoneValid] = useState(true);
 	const [Street, setStreet] = useState('');
+
+	React.useEffect(()=>{
+		setStreet(props.info.Street)
+	},[props.info.Street])
+	
 	const [City, setCity] = useState('');
+
+	React.useEffect(()=>{
+		setCity(props.info.City)
+	},[props.info.City])
+
 	const [State, setState] = useState('');
+
+	React.useEffect(()=>{
+		setState(props.info.State)
+	},[props.info.State])
+
 	const [Country, setCountry] = useState('');
+
+	React.useEffect(()=>{
+		setCountry(props.info.Country)
+	},[props.info.Country])
 	const [Postalcode, setPostalcode] = useState('');
-	const [formErrors,setFormErrors] = useState('');
-		const changeName= (event) => {
+
+	React.useEffect(()=>{
+		setPostalcode(props.info.Postalcode)
+	},[props.info.Postalcode])
+	const [buttonName,setButtonName] = useState('Add');
+	const changeName= (event) => {
 		setName(event.target.value);
-		setFormErrors({});
 	};
 	const changeEmailId = (event) => {
 		setEmailId(event.target.value);
@@ -41,6 +143,7 @@ function StudentForm(props) {
 	const transferValue = (event) => {
 		event.preventDefault();
 		const val = {
+			id,
 			Name,
 			EmailId,
 			Phone,
@@ -49,23 +152,42 @@ function StudentForm(props) {
 			State,
 			Country,
 			Postalcode,
-			formErrors:{},
 		};
-		
-		const nameRegex = /^[a-zA-Z ]/;
-		const newFormErr = {};
-		if(nameRegex.test(Name)){
-			setFormErrors(newFormErr)
+
+		if(isvalidname(Name)){
+			console.log("Valid Name")
+			setIsNameValid(true)
 		}
-		if(!nameRegex.test(Name)){
-			newFormErr.Name="invalid name";}
-			setFormErrors(newFormErr);
+		else{
+			setIsNameValid(false)
+			console.log("Invalid Name")
+			return;
+		}
+
+		if(isemailValid(EmailId)){
+			setIsEMailValid(true)
+			console.log("Valid EMail")
+		}
+		else{
+			setIsEMailValid(false)
+			console.log("Invalid EMail")
+			return;
+		}
+
+		if(isPhoneNumberVallid(Phone)){
+			console.log("Phone number valid")
+			setIsPhoneValid(true)
+		}
+
+		else{
+			setIsPhoneValid(false)
+			console.log("Invalid Phone Number")
+			return;
+		}
 		
 		props.func(val);
-		if(Object.values(formErrors).length === 0){
 		clearState();
-		}
-			};
+	};
 
 	const clearState = () => {
 		setName('');
@@ -78,6 +200,8 @@ function StudentForm(props) {
 		setPostalcode('');
 	};
 
+	console.log("Printing props",props)
+
 	return (
 		<div className="container">
 			<h2 style={{ textAlign: "center" }} >Employee Information Form </ h2>
@@ -85,16 +209,18 @@ function StudentForm(props) {
 				<div class="row gy-5">
 					<div class="col-3">
 						<label>Name       </label>
-						<input type="text"  placeholder="Your name.." onChange={changeName} />
+						<input type="text" value={Name} placeholder="Your name.." onChange={changeName} />
+						{isnameValid?null:<p>Invalid Username</p>}
 					</div>
 					<div class="col-3">
 						<label>EmailId     </label>
 						<input type="text" value={EmailId} placeholder="Your EmailId." onChange={changeEmailId} />
-					<div>{formErrors.name}</div>
+						{isEmailValid?null:<p>Invalid Email</p>}
 					</div>
 					<div class="col-3">
 						<label>Phone       </label>
 						<input type="text" value={Phone} placeholder="Your Phone number." onChange={changePhone} />
+						{isPhoneValid?null:<p>Invalid Phone</p>}
 					</div>
 					<div class="col-3">
 						<label>Street                 </label>
@@ -116,7 +242,7 @@ function StudentForm(props) {
 						<label>Postalcode            </label>
 						<input type="text" value={Postalcode} placeholder="Your Postalcode." onChange={changePostalcode} />
 					</div>
-					<button type="Add" onClick={transferValue}> Add </button>
+					<button type="Add" onClick={transferValue}>{props.isUpdate?'Update':'Add'} </button>
 				</div>
 			</div>
 		</div>
