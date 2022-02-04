@@ -1,0 +1,48 @@
+.container {    
+    padding: 5px;    
+     border-radius: 10px;  
+     border-color: black;  
+     background-color: skyblue;    
+    }    
+        
+    input[type=text]    
+    {    
+      width: 8%;  
+      background-color: lightgray;  
+      padding: 10px 10px;   
+      padding-left: 10px; 
+      margin: 10px 0;      
+      border-radius: 2px;      
+    }    
+        
+    button[type=Add] {    
+      width: 10%;   
+      background-color: purple;    
+      color: white; 
+      font-size: 1rem; 
+      font-weight: bold;
+      font-style: italic;  
+      padding: 10px 20px;    
+      margin: 10px 0;      
+      border-radius: 4px;    
+      cursor: pointer;    
+    }    
+        
+    button[type=Add]:hover {    
+      background-color: red;    
+    }    
+    .showError{    
+      border-color: #a94442 !important;    
+      color: #a94442 !important;    
+      margin-bottom: 15px;    
+    }
+    #tbox{
+      text-align: center;
+      justify-content: center;
+      border: black;
+      border-top: black;
+      background-color: black;
+      color: blue;
+      font-size: larger;
+    
+    }
